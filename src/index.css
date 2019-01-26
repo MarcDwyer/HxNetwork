@@ -155,9 +155,10 @@ code {
   width: 500px;
   height: calc(100% - 55px);
 }
-.chatter iframe {
+.chatter .thechat {
   width: 100%;
   height: 100%;
+  background-color: #191919;
 }
 .topcontent {
   display: flex;
@@ -209,4 +210,8 @@ code {
 .navbar-text {
   position: absolute;
   right: 15px;
+}
+
+.thename, .navbar-brand {
+  font-weight: bold;
 }

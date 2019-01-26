@@ -14,7 +14,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	fisheryates "github.com/matttproud/fisheryates"
 )
@@ -24,20 +23,12 @@ var mykey string
 
 var streamers = []Streamer{
 	{Name: "Ice", ChannelId: "UCv9Edl_WbtbPeURPtFDo-uA"},
-	{Name: "Mixhound", ChannelId: "UC_jxnWLGJ2eQK4en3UblKEw"},
 	{Name: "Hyphonix", ChannelId: "UCaFpm67qMk1W1wJkFhGXucA"},
 	{Name: "Gary", ChannelId: "UCvxSwu13u1wWyROPlCH-MZg"},
-	{Name: "Evan", ChannelId: "UCHYUiFsAJ-EDerAccSHIslw"},
-	{Name: "Lolesports", ChannelId: "UCvqRdlKsE5Q8mf8YXbdIJLw"},
-	{Name: "Chilledcow", ChannelId: "UCSJ4gkVC6NrvII8umztf0Ow"},
 	{Name: "Cxnews", ChannelId: "UCStEQ9BjMLjHTHLNA6cY9vg"},
-	{Name: "Code", ChannelId: "UCvjgXvBlbQiydffZU7m1_aw"},
-	{Name: "Joe", ChannelId: "UCzQUP1qoWDoEbmsQxvdjxgQ"},
-	{Name: "Nasa", ChannelId: "UCLA_DiR1FfKNvjuUpBHmylQ"},
-	{Name: "CBS", ChannelId: "UC8p1vwvWtl6T73JiExfWs1g"},
-	{Name: "Pepper", ChannelId: "UCdSr4xliU8yDyS1aGnCUMTA"},
-	{Name: "EBZ", ChannelId: "UCkR8ndH0NypMYtVYARnQ-_g"},
-	{Name: "Andy", ChannelId: "UC8EmlqXIlJJpF7dTOmSywBg"},
+	{Name: "SJC", ChannelId: "UC4YYNTbzt3X1uxdTCJaYWdg"},
+	{Name: "Chilledcow", ChannelId: "UCSJ4gkVC6NrvII8umztf0Ow"},
+	{Name: "Mixhound", ChannelId: "UC_jxnWLGJ2eQK4en3UblKEw"},
 }
 var resp []Newlive
 
@@ -76,7 +67,7 @@ func main() {
 	go getter()
 
 	go func() {
-		pollInterval := 5
+		pollInterval := 35
 
 		timerCh := time.Tick(time.Duration(pollInterval) * time.Minute)
 
@@ -84,13 +75,21 @@ func main() {
 			getter()
 		}
 	}()
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./public/build/static/"))))
 
-	r := mux.NewRouter()
-	r.HandleFunc("/streamers/all", getCatalog).Methods("GET")
-	r.HandleFunc("/streamers/live", sendStuff).Methods("GET")
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/build")))
-	log.Fatal(http.ListenAndServe(":3000", r))
+	http.HandleFunc("/streamers/all", getCatalog)
+	http.HandleFunc("/streamers/live", sendStuff)
 
+	//	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	//		if r.URL.Path == "/manifest.json" || r.URL.Path == "/favicon.png" {
+	//			str := fmt.Sprintf("./public/build/%v", r.URL.Path)
+	//			http.ServeFile(w, r, str)
+	//			return
+	//		}
+	//		http.ServeFile(w, r, "./public/build/index.html")
+	//	})
+
+	log.Fatal(http.ListenAndServe(":5000", nil))
 }
 
 func getter() {

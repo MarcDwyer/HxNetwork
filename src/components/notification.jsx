@@ -14,9 +14,8 @@ export default class Notification extends Component {
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         // finding the difference between the previous streamers and the current streamers, seeing if there is a difference (thank you lodash)
-        if (prevProps.active !== this.props.active) {
+        if (prevProps.active && prevProps.active !== this.props.active) {
             const { active } = this.props;
-
             const oldnames = Object.values(prevProps.active).map(stream => stream.name)
             const newnames = Object.values(active).map(stream => stream.name);
 

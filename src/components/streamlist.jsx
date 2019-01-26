@@ -34,8 +34,14 @@ export default class StreamList extends Component {
     }
     renderStreams(){
         const { list, show } = this.state;
+        if (list.length === 0) {
+            return (
+                "No streamers Online"
+            )
+        }
         return list.map((stream, index) => {
             const avatar = `https://s3.us-east-2.amazonaws.com/fetchappbucket/images/${stream.Name}.jpg`;
+            const newName = stream.Name === "Ice" ? "Dishonest Andy" : stream.Name
             if (!show && index >= 6) return;
             return (
             <div className="streamer" key={uuid()}
@@ -48,7 +54,7 @@ export default class StreamList extends Component {
             <div className="substreamer">
             <img src={avatar} alt="streamimage" className="ml-2" />
             <div className="streamname ml-2 ">
-            <span>{stream.Name}</span>
+            <span className="thename">{newName}</span>
             </div>
             </div>
             </div>

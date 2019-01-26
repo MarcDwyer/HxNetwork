@@ -4,41 +4,50 @@ import React, { Component } from 'react'
     constructor(props) {
         super(props)
         this.state = {
-            theStream: null
+            online: false,
+            theStream: {
+                Likes: "900000",
+                Dislikes: "2 (Ice and Sam)",
+                Title: "Our god is offline... watch his VOD",
+                Viewers: "10000000",
+                VideoID: "https://www.youtube.com/embed/jiZvsxNtmvw",
+                Description: "Wow our new CEO is awesome"
+            }
         }
     }
     componentDidMount() {
         if (this.props.live) {
-         this.setState({theStream: Object.values(this.props.live)[0]})
+         this.setState({online: true, theStream: Object.values(this.props.live)[0]})
+        } else {
+            this.setState({online: false, theStream: null})
         }
     }
-     componentDidUpdate(prevProps, prevState, snapshot) {
+     componentDidUpdate(prevProps) {
         const { live, onStream } = this.props;
-        const { theStream } = this.state;
-       // const { theStream } = this.state
-         if (onStream && !live[onStream]) {
-             console.log('first')
+        const { online, theStream } = this.state
+         if (online && (onStream && !live[onStream])) {
+             console.log(1)
             this.setState({theStream: live[Object.keys(live)[0]]})
         }
-       else if (prevProps.onStream != this.props.onStream) {
-        console.log('second')
+       else if (online && (prevProps.onStream !== this.props.onStream)) {
+        console.log(2)
             this.setState({ theStream: live[onStream] })
+        } else if (live !== prevProps.live && !online ) {
+            console.log(3)
+          this.setState({online: true, theStream: live[Object.keys(live)[0]]})
         }
     }
 
 
      render() {
-        console.log(this.state)
-        console.log(this.props)
-        const { theStream } = this.state
-
+        const { theStream, online } = this.state
         if (!theStream) return null
         const { Likes, Dislikes, VideoID, Viewers, Title } = theStream
 
         const darkTheme = this.props.theme ? 'darkTheme' : 'whiteTheme';
-        const vidUrl = `https://www.youtube.com/embed/${VideoID}?autoplay=1&amp;showinfo=0&amp;modestbranding=1&amp;enablejsapi=1&amp`;
+        const vidUrl = !online ? theStream.VideoID : `https://www.youtube.com/embed/${VideoID}?autoplay=1&amp;showinfo=0&amp;modestbranding=1&amp;enablejsapi=1&amp`;
         const url = window.location.hostname;
-        const chatUrl = `https://www.youtube.com/live_chat?v=${VideoID}&embed_domain=${url}`;
+        const chatUrl = !online ? "" : `https://www.youtube.com/live_chat?v=${VideoID}&embed_domain=${url}`;
 
         
         return (
@@ -67,7 +76,7 @@ import React, { Component } from 'react'
                     </div>
                 </div>
                 <div className="chatter">
-                    <iframe src={chatUrl} frameBorder="0" />
+                <iframe className="thechat" src={chatUrl} frameBorder="0" />
                 </div>
             </div>
         );
